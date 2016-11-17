@@ -14,11 +14,6 @@ for i = 1:fullGridSize^2
     end
 end
 
-grid(1,:) = grid(end-1,:);
-grid(end,:) = grid(2,:);
-grid(:,1) = grid(:,end-1);
-grid(:,end) = grid(:,2);
-
 nbhMask = [ 0 1 0 ; 1 0 1 ; 0 1 0];
 boundaryMask = zeros(fullGridSize);
 boundaryMask(1,:) = 1;
@@ -29,6 +24,16 @@ boundaryMask(:,end) = 1;
 xStart = ceil(rand()*gridSize) + 1;
 yStart = ceil(rand()*gridSize) + 1;
 grid(xStart, yStart) = 2;
+
+swap = grid(1:2,:);
+grid(1:2,:) = grid(end-1:end,:);
+grid(end-1:end,:) = swap;
+image(25*grid)
+swap = grid(:,1:2);
+grid(:,1:2) = grid(:,end-1:end);
+grid(:,end-1:end) = swap;
+image(25*grid)
+    
 
 [xFire, yFire] = find(grid == 2);
 tic
@@ -46,14 +51,14 @@ while burning
         grid(xFire-1:xFire+1, yFire-1:yFire+1) = neighborhood;
         image(25*grid)
     end
-
-    grid(1,:) = grid(end-1,:);
+    
+    swap = grid(1:2,:);
+    grid(1:2,:) = grid(end-1:end,:);
+    grid(end-1:end,:) = swap;
     image(25*grid)
-    grid(end,:) = grid(2,:);
-    image(25*grid)
-    grid(:,1) = grid(:,end-1);
-    image(25*grid)
-    grid(:,end) = grid(:,2);
+    swap = grid(:,1:2);
+    grid(:,1:2) = grid(:,end-1:end);
+    grid(:,end-1:end) = swap;
     image(25*grid)
     
     grid(grid==2 & boundaryMask) = 0;

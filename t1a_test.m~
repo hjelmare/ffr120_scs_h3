@@ -1,4 +1,3 @@
-close all
 clc
 clf
 clear all
@@ -6,9 +5,6 @@ clear all
 gridSize = 10;
 fullGridSize = gridSize + 2;    % Extra for periodic boundaries
 treeProb = 0.6;
-
-nbhMask = [ 0 1 0 ; 1 0 1 ; 0 1 0];
-f
 
 grid = zeros(fullGridSize);
 
@@ -22,6 +18,13 @@ grid(1,:) = grid(end-1,:);
 grid(end,:) = grid(2,:);
 grid(:,1) = grid(:,end-1);
 grid(:,end) = grid(:,2);
+
+nbhMask = [ 0 1 0 ; 1 0 1 ; 0 1 0];
+boundaryMask = zeros(fullGridSize);
+boundaryMask(1,:) = 1;
+boundaryMask(end,:) = 1;
+boundaryMask(:,1) = 1;
+boundaryMask(:,end) = 1;
 
 xStart = ceil(rand()*gridSize) + 1;
 yStart = ceil(rand()*gridSize) + 1;
@@ -41,14 +44,20 @@ while burning
         neighborhood(2,2) = 3;
         
         grid(xFire-1:xFire+1, yFire-1:yFire+1) = neighborhood;
+        image(25*grid)
     end
-
-    grid(1,:) = grid(end-1,:);
-    grid(end,:) = grid(2,:);
-    grid(:,1) = grid(:,end-1);
-    grid(:,end) = grid(:,2);
     
-    grid(grid(fullMask)==2) = 0;
+    swap = grid(1:2,:);
+    grid(1:2,:) = grid(end-1:end,:);
+    grid(end-1:end,:) = swap;
+    image(25*grid)
+    swap = grid(1:2,:);
+    grid(1:2,:) = grid(end-1:end,:);
+    grid(end-1:end,:) = swap;
+    image(25*grid)
+    
+    grid(grid==2 & boundaryMask) = 0;
+    image(25*grid)
     [xFire, yFire] = find(grid == 2);
 
     if isempty(xFire)
